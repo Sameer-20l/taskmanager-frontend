@@ -58,7 +58,13 @@ const ApiService = {
 
 // Error Handling Function
 const handleError = (error) => {
-  if (error.response) {
+  if (error.response?.status === 401) {
+    // Token expired, log out user
+    toast.error("Session expired. Please log in again.");
+    localStorage.removeItem("token"); 
+    window.location.href = "/"; 
+  }
+  else if (error.response) {
     console.error("API Error:", error.response.data.message || error.message);
     return { success: false, message: error.response.data.message || "Something went wrong!" };
   } else if (error.request) {

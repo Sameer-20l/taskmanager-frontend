@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ApiService from "../utils/ApiService"
-import LoadToaster from "../components/Toaster";
+import ApiService from "../../utils/ApiService"
+import LoadToaster from "../../components/Toaster";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -16,13 +16,20 @@ const LoginPage = () => {
         password : password
     }
     await ApiService.post('auth/login',request_payload,false).then((response)=>{
-        console.log(response);
+       
         if(response.status){
-
-        navigate('/home')
+          if(response.results.role === 'admin'){
+            navigate("/admin/adminHome");
+          }
+          else if(response.results.role === 'recruiter'){
+            navigate('/recruiter/recruiterHome');
+          }
+          else if(response.results.role === 'student'){
+            navigate('/applicant/applicantHome');
+          }
         LoadToaster(response.message,"success");
         localStorage.setItem("token",response.results.access_token);
-        console.log(localStorage.getItem("token"));
+        localStorage.setItem("role",response.results.role);
         }else{
         LoadToaster(response.message,"failure"); 
         }
